@@ -22,11 +22,11 @@ const localeMap = {
 
 export default function FormattedDate ({ date }) {
   const lang = useConfig().lang.toLowerCase()
+  const locale = localeMap[lang] || 'en'
 
   useEffect(() => {
-    const locale = localeMap[lang] || 'en'
     dayjs.locale(locale)
-  }, [lang])
+  }, [locale])
 
-  return <span>{dayjs(date).format('ll')}</span>
+  return <span>{dayjs(date).locale(locale).format('ll')}</span>
 }
