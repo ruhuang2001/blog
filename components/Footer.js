@@ -1,3 +1,4 @@
+import React from 'react'
 import { useConfig } from '@/lib/config'
 import Vercel from '@/components/Vercel'
 const Footer = ({ fullWidth }) => {
@@ -25,4 +26,4 @@ const Footer = ({ fullWidth }) => {
   )
 }
 
-export default Footer
+export default React.memo(Footer)

@@ -1,3 +1,4 @@
+import React from 'react'
 import Link from 'next/link'
 
 const Tags = ({ tags, currentTag }) => {
@@ -31,4 +32,4 @@ const Tags = ({ tags, currentTag }) => {
   )
 }
 
-export default Tags
+export default React.memo(Tags)

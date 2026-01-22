@@ -1,3 +1,4 @@
+import React from 'react'
 import Link from 'next/link'
 
 const TagItem = ({ tag }) => (
@@ -8,4 +9,4 @@ const TagItem = ({ tag }) => (
   </Link>
 )
 
-export default TagItem
+export default React.memo(TagItem)
