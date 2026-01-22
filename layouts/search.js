@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import BlogPost from '@/components/BlogPost'
 import Container from '@/components/Container'
 import Tags from '@/components/Tags'
@@ -6,14 +6,15 @@ import PropTypes from 'prop-types'
 
 const SearchLayout = ({ tags, posts, currentTag }) => {
   const [searchValue, setSearchValue] = useState('')
-  let filteredBlogPosts = []
-  if (posts) {
-    filteredBlogPosts = posts.filter(post => {
+
+  const filteredBlogPosts = useMemo(() => {
+    if (!posts) return []
+    return posts.filter(post => {
       const tagContent = post.tags ? post.tags.join(' ') : ''
       const searchContent = post.title + post.summary + tagContent
       return searchContent.toLowerCase().includes(searchValue.toLowerCase())
     })
-  }
+  }, [posts, searchValue])
 
   return (
     <Container>

@@ -1,3 +1,4 @@
+import React from 'react'
 import FormattedDate from "@/components/FormattedDate";
 import { useConfig } from "@/lib/config";
 import Link from "next/link";
@@ -26,4 +27,4 @@ const BlogPost = ({ post }) => {
   );
 };
 
-export default BlogPost;
+export default React.memo(BlogPost);

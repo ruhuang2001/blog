@@ -63,6 +63,21 @@ const Container = ({ children, layout, fullWidth, ...customMeta }) => {
               content={meta.date}
             />
             <meta property="article:author" content={BLOG.author} />
+            <link rel="canonical" href={`${BLOG.link}/${meta.slug || ''}`} />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  '@context': 'https://schema.org',
+                  '@type': 'BlogPosting',
+                  headline: meta.title,
+                  description: meta.description,
+                  author: { '@type': 'Person', name: BLOG.author },
+                  datePublished: meta.date,
+                  url: `${BLOG.link}/${meta.slug || ''}`
+                })
+              }}
+            />
           </>
         )}
       </Head>
