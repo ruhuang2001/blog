@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { init } from '@waline/client'
 import { useConfig } from '@/lib/config'
 
@@ -10,11 +10,21 @@ const Waline = ({ path }) => {
   const walineConfig = BLOG.comment?.walineConfig || {}
   const serverURL = walineConfig.serverURL
   const lang = walineConfig.lang || BLOG.lang
-  const meta = Array.isArray(walineConfig.meta) ? walineConfig.meta : []
-  const requiredMeta = Array.isArray(walineConfig.requiredMeta)
-    ? walineConfig.requiredMeta
-    : []
-  const emoji = Array.isArray(walineConfig.emoji) ? walineConfig.emoji : []
+  const meta = useMemo(
+    () => (Array.isArray(walineConfig.meta) ? walineConfig.meta : []),
+    [walineConfig.meta]
+  )
+  const requiredMeta = useMemo(
+    () =>
+      Array.isArray(walineConfig.requiredMeta)
+        ? walineConfig.requiredMeta
+        : [],
+    [walineConfig.requiredMeta]
+  )
+  const emoji = useMemo(
+    () => (Array.isArray(walineConfig.emoji) ? walineConfig.emoji : []),
+    [walineConfig.emoji]
+  )
   const hasLocale =
     walineConfig.locale &&
     typeof walineConfig.locale === 'object' &&
