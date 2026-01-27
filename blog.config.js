@@ -37,8 +37,8 @@ const BLOG = {
     }
   },
   comment: {
-    // support provider: gitalk, utterances, cusdis
-    provider: '', // leave it empty if you don't need any comment plugin
+    // support provider: gitalk, utterances, cusdis, waline
+    provider: 'waline', // leave it empty if you don't need any comment plugin
     gitalkConfig: {
       repo: '', // The repository of store comments
       owner: '',
@@ -54,6 +54,17 @@ const BLOG = {
       appId: '', // data-app-id
       host: 'https://cusdis.com', // data-host, change this if you're using self-hosted version
       scriptSrc: 'https://cusdis.com/js/cusdis.es.js' // change this if you're using self-hosted version
+    },
+    walineConfig: {
+      serverURL: 'https://blog-comment-phi-eight.vercel.app',
+      lang: '', // leave it empty to use BLOG.lang
+      pageview: false,
+      emoji: [],
+      meta: [],
+      requiredMeta: [],
+      wordLimit: 0,
+      locale: {},
+      comment: true
     }
   },
   isProd: process.env.VERCEL_ENV === 'production' // distinguish between development and production environment (ref: https://vercel.com/docs/environment-variables#system-environment-variables)

@@ -1,6 +1,7 @@
 import 'prismjs/themes/prism.css'
 import 'react-notion-x/src/styles.css'
 import 'katex/dist/katex.min.css'
+import '@waline/client/style'
 import App from 'next/app'
 import '@/styles/globals.css'
 import '@/styles/notion.css'

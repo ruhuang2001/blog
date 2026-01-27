@@ -16,6 +16,12 @@ const CusdisComponent = dynamic(
   },
   { ssr: false }
 )
+const WalineComponent = dynamic(
+  () => {
+    return import('@/components/Waline')
+  },
+  { ssr: false }
+)
 
 const Comments = ({ frontMatter }) => {
   const router = useRouter()
@@ -45,6 +51,9 @@ const Comments = ({ frontMatter }) => {
             theme: BLOG.appearance
           }}
         />
+      )}
+      {BLOG.comment && BLOG.comment.provider === 'waline' && (
+        <WalineComponent path={frontMatter.id} />
       )}
     </div>
   )
