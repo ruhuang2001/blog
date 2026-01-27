@@ -11,7 +11,13 @@
   },
   "POST": {
     "BACK": "Back",
-    "TOP": "Top"
+    "TOP": "Top",
+    "VIEWS": "Views"
+  },
+  "SEARCH": {
+    "PLACEHOLDER": "Search Articles",
+    "PLACEHOLDER_TAG": "Search in #",
+    "NOT_FOUND": "No posts found."
   },
   "PAGE": {
     "ERROR_404": {

@@ -49,10 +49,16 @@ const Waline = ({ path }) => {
       dark: 'html.dark'
     }
 
-    if (typeof walineConfig.pageview === 'boolean') {
+    if (
+      typeof walineConfig.pageview === 'boolean' ||
+      typeof walineConfig.pageview === 'string'
+    ) {
       options.pageview = walineConfig.pageview
     }
-    if (typeof walineConfig.comment === 'boolean') {
+    if (
+      typeof walineConfig.comment === 'boolean' ||
+      typeof walineConfig.comment === 'string'
+    ) {
       options.comment = walineConfig.comment
     }
     if (emoji.length > 0) options.emoji = emoji

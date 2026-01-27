@@ -3,9 +3,11 @@ import BlogPost from '@/components/BlogPost'
 import Container from '@/components/Container'
 import Tags from '@/components/Tags'
 import PropTypes from 'prop-types'
+import { useLocale } from '@/lib/locale'
 
 const SearchLayout = ({ tags, posts, currentTag }) => {
   const [searchValue, setSearchValue] = useState('')
+  const locale = useLocale()
 
   const filteredBlogPosts = useMemo(() => {
     if (!posts) return []
@@ -22,7 +24,9 @@ const SearchLayout = ({ tags, posts, currentTag }) => {
         <input
           type="text"
           placeholder={
-            currentTag ? `Search in #${currentTag}` : 'Search Articles'
+            currentTag
+              ? `${locale.SEARCH.PLACEHOLDER_TAG}${currentTag}`
+              : locale.SEARCH.PLACEHOLDER
           }
           className="block w-full border px-4 py-2 border-black bg-white text-black dark:bg-night dark:border-white dark:text-white"
           onChange={e => setSearchValue(e.target.value)}
@@ -48,7 +52,9 @@ const SearchLayout = ({ tags, posts, currentTag }) => {
       />
       <div className="article-container my-8">
         {!filteredBlogPosts.length && (
-          <p className="text-gray-500 dark:text-gray-300">No posts found.</p>
+          <p className="text-gray-500 dark:text-gray-300">
+            {locale.SEARCH.NOT_FOUND}
+          </p>
         )}
         {filteredBlogPosts.slice(0, 20).map(post => (
           <BlogPost key={post.id} post={post} />

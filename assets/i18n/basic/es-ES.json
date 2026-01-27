@@ -11,7 +11,8 @@
   },
   "POST": {
     "BACK": "Atrás",
-    "TOP": "Arriba"
+    "TOP": "Arriba",
+    "VIEWS": "Vistas"
   },
   "PAGE": {
     "ERROR_404": {

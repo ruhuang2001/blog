@@ -163,3 +163,20 @@ nav {
 .capture-pointer-events * {
   @apply pointer-events-none;
 }
+
+/* Waline Custom Styles */
+.waline-pageview-count,
+.waline-comment-count {
+  @apply font-mono font-medium antialiased;
+}
+
+.waline-pageview-count::after,
+.waline-comment-count::after {
+  content: '';
+  @apply inline-block;
+}
+
+/* 优化列表页的文章标题悬停效果 */
+.group:hover .waline-pageview-count {
+  @apply text-blue-500 transition-colors duration-200;
+}

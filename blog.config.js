@@ -58,7 +58,7 @@ const BLOG = {
     walineConfig: {
       serverURL: 'https://blog-comment-phi-eight.vercel.app',
       lang: '', // leave it empty to use BLOG.lang
-      pageview: false,
+      pageview: true,
       emoji: [],
       meta: [],
       requiredMeta: [],

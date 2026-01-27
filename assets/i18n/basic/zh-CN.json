@@ -11,7 +11,13 @@
   },
   "POST": {
     "BACK": "返回",
-    "TOP": "回到顶部"
+    "TOP": "回到顶部",
+    "VIEWS": "次阅读"
+  },
+  "SEARCH": {
+    "PLACEHOLDER": "搜索文章",
+    "PLACEHOLDER_TAG": "搜索 #",
+    "NOT_FOUND": "未找到相关文章"
   },
   "PAGE": {
     "ERROR_404": {
