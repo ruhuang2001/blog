@@ -3,7 +3,8 @@
     "INDEX": "博客",
     "RSS": "RSS",
     "SEARCH": "搜索",
-    "ABOUT": "关于"
+    "ABOUT": "关于",
+    "TALKS": "演讲"
   },
   "PAGINATION": {
     "PREV": "上一页",
