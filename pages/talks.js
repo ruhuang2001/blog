@@ -90,17 +90,18 @@ export default function TalksPage ({ talks, sourceUrl }) {
             >
               <div className="aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800 relative">
                 <img
-                  src={`${talk.url.endsWith('/') ? talk.url : talk.url + '/'}${talk.url.split('/').filter(Boolean).pop()}.png`}
+                  src={`${talk.url.endsWith('/') ? talk.url : talk.url + '/'}og-image.png`}
                   alt={talk.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => {
                     const currentSrc = e.target.src
                     const baseUrl = talk.url.endsWith('/') ? talk.url : talk.url + '/'
-                    if (currentSrc.endsWith('.png') && !currentSrc.endsWith('og-image.png') && !currentSrc.endsWith('1.png')) {
-                      e.target.src = `${baseUrl}og-image.png`
-                    } else if (currentSrc.endsWith('og-image.png')) {
+                    const slugPng = `${baseUrl}${talk.url.split('/').filter(Boolean).pop()}.png`
+                    if (currentSrc.endsWith('og-image.png')) {
                       e.target.src = `${baseUrl}screenshots/1.png`
                     } else if (currentSrc.endsWith('screenshots/1.png')) {
+                      e.target.src = slugPng
+                    } else if (currentSrc.endsWith('.png')) {
                       e.target.onerror = null
                       e.target.src = 'https://www.notion.so/images/page-cover/web_logistics.jpg' // Fallback
                     }
