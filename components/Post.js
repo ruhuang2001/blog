@@ -1,15 +1,11 @@
 import PropTypes from 'prop-types'
 import cn from 'classnames'
-import dynamic from 'next/dynamic'
 import { useConfig } from '@/lib/config'
 import useTheme from '@/lib/theme'
 import FormattedDate from '@/components/FormattedDate'
 import TagItem from '@/components/TagItem'
+import NotionRenderer from '@/components/NotionRenderer'
 import TableOfContents from '@/components/TableOfContents'
-
-const NotionRenderer = dynamic(() => import('@/components/NotionRenderer'), {
-  ssr: false
-})
 
 /**
  * A post renderer

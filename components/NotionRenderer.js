@@ -2,9 +2,22 @@ import { createElement as h } from 'react'
 import dynamic from 'next/dynamic'
 import { NotionRenderer as Renderer } from 'react-notion-x'
 import { getTextContent } from 'notion-utils'
+import { Collection as DefaultCollection } from 'react-notion-x/build/third-party/collection'
 import { FONTS_SANS, FONTS_SERIF } from '@/consts'
 import { useConfig } from '@/lib/config'
 import Toggle from '@/components/notion-blocks/Toggle'
+
+function Collection (props) {
+  const { block } = props
+
+  // The post header already renders the relevant metadata for collection-backed pages.
+  // Skip Notion's duplicated collection page properties block to avoid hydration mismatch.
+  if (block?.type === 'page' && block?.parent_table === 'collection') {
+    return null
+  }
+
+  return <DefaultCollection {...props} />
+}
 
 // Lazy-load some heavy components & override the renderers of some block types
 const components = {
@@ -68,9 +81,7 @@ const components = {
     }
   }),
   // Database block
-  Collection: dynamic(() => {
-    return import('react-notion-x/build/third-party/collection').then(module => module.Collection)
-  }),
+  Collection,
   // Equation block & inline variant
   Equation: dynamic(() => {
     return import('react-notion-x/build/third-party/equation').then(module => module.Equation)
