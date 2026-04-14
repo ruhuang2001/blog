@@ -3,8 +3,10 @@ import { getPageTableOfContents } from 'notion-utils'
 import cn from 'classnames'
 
 export default function TableOfContents ({ blockMap, className, style }) {
-  const collectionId = Object.keys(blockMap.collection)[0]
-  const page = Object.values(blockMap.block).find(block => block.value.parent_id === collectionId).value
+  const collectionId = Object.keys(blockMap.collection || {})[0]
+  const pageRecord = Object.values(blockMap.block || {}).find(block => block?.value?.parent_id === collectionId)
+  const page = pageRecord?.value
+  if (!page) return null
   const nodes = getPageTableOfContents(page, blockMap)
 
   if (!nodes.length) return null
@@ -13,8 +15,9 @@ export default function TableOfContents ({ blockMap, className, style }) {
    * @param {string} id - The ID of target heading block (could be in UUID format)
    */
   function scrollTo (id) {
-    id = id.replaceAll('-', '')
-    const target = document.querySelector(`.notion-block-${id}`)
+    if (!id) return
+    const normalizedId = String(id).replace(/-/g, '')
+    const target = document.querySelector(`.notion-block-${normalizedId}`)
     if (!target) return
     // `65` is the height of expanded nav
     // TODO: Remove the magic number
