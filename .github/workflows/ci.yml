@@ -10,7 +10,7 @@ env:
   CI: true
   NOTION_API_USE_FIXTURES: '1'
   NOTION_API_FIXTURE_PATH: tests/fixtures/notion-api.json
-  NOTION_PAGE_ID: 11111111111111111111111111111111
+  NOTION_PAGE_ID: '11111111111111111111111111111111'
   VERCEL_ENV: production
 
 jobs:
@@ -23,8 +23,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.28.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
