@@ -1,6 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import cn from 'classnames'
-import { config } from '@/lib/server/config'
+import { serverConfig } from '@/lib/server/config'
 import tailwind from '@/tailwind.config'
 import CJK from '@/lib/cjk'
 class MyDocument extends Document {
@@ -13,12 +13,12 @@ class MyDocument extends Document {
     const initialColorScheme = {
       auto: 'color-scheme-unset',
       dark: 'dark'
-    }[config.appearance]
+    }[serverConfig.appearance]
 
     return (
-      <Html lang={config.lang} className={cn(initialColorScheme)}>
+      <Html lang={serverConfig.lang} className={cn(initialColorScheme)}>
         <Head>
-          {config.font && config.font === 'serif'
+          {serverConfig.font && serverConfig.font === 'serif'
             ? (
             <>
               <link
@@ -57,7 +57,7 @@ class MyDocument extends Document {
               )}
 
           {['zh', 'ja', 'ko'].includes(
-            config.lang.slice(0, 2).toLocaleLowerCase()
+            serverConfig.lang.slice(0, 2).toLocaleLowerCase()
           ) && (
             <>
               <link
@@ -69,39 +69,39 @@ class MyDocument extends Document {
                 rel="preload"
                 as="style"
                 href={`https://fonts.googleapis.com/css2?family=Noto+${
-                  config.font === 'serif' ? 'Serif' : 'Sans'
+                  serverConfig.font === 'serif' ? 'Serif' : 'Sans'
                 }+${CJK()}:wght@400;500;700&display=swap`}
               />
               <link
                 rel="stylesheet"
                 href={`https://fonts.googleapis.com/css2?family=Noto+${
-                  config.font === 'serif' ? 'Serif' : 'Sans'
+                  serverConfig.font === 'serif' ? 'Serif' : 'Sans'
                 }+${CJK()}:wght@400;500;700&display=swap`}
               />
               <noscript>
                 <link
                   rel="stylesheet"
                   href={`https://fonts.googleapis.com/css2?family=Noto+${
-                    config.font === 'serif' ? 'Serif' : 'Sans'
+                    serverConfig.font === 'serif' ? 'Serif' : 'Sans'
                   }+${CJK()}:wght@400;500;700&display=swap`}
                 />
               </noscript>
             </>
           )}
           <link rel="icon" href="/favicon.png" />
-          <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-          <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
           <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/feed"></link>
-          {config.appearance === 'auto'
+          {serverConfig.appearance === 'auto'
             ? (
             <>
-            <meta name="theme-color" content={config.lightBackground} media="(prefers-color-scheme: light)"/>
-            <meta name="theme-color" content={config.darkBackground} media="(prefers-color-scheme: dark)"/>
+            <meta name="theme-color" content={serverConfig.lightBackground} media="(prefers-color-scheme: light)"/>
+            <meta name="theme-color" content={serverConfig.darkBackground} media="(prefers-color-scheme: dark)"/>
             </>
               )
             : (
-            <meta name="theme-color" content={config.appearance === 'dark' ? config.darkBackground : config.lightBackground} />
+            <meta name="theme-color" content={serverConfig.appearance === 'dark' ? serverConfig.darkBackground : serverConfig.lightBackground} />
               )
           }
           {/* To ensure the initial background color follows media preference when ThemeProvider is

@@ -1,3 +1,4 @@
+import { DEFAULT_REVALIDATE_SECONDS } from '@/lib/server/config'
 import { getAllPosts, getAllTagsFromPosts } from '@/lib/notion'
 import SearchLayout from '@/layouts/search'
 
@@ -9,6 +10,9 @@ export async function getStaticProps ({ params }) {
   const currentTag = params.tag
   const posts = await getAllPosts({ includePages: false })
   const tags = getAllTagsFromPosts(posts)
+  if (!tags[currentTag]) {
+    return { notFound: true }
+  }
   const filteredPosts = posts.filter(
     post => post && post.tags && post.tags.includes(currentTag)
   )
@@ -18,7 +22,7 @@ export async function getStaticProps ({ params }) {
       posts: filteredPosts,
       currentTag
     },
-    revalidate: 1
+    revalidate: DEFAULT_REVALIDATE_SECONDS
   }
 }
 
@@ -27,6 +31,6 @@ export async function getStaticPaths () {
   const tags = getAllTagsFromPosts(posts)
   return {
     paths: Object.keys(tags).map(tag => ({ params: { tag } })),
-    fallback: true
+    fallback: 'blocking'
   }
 }

@@ -14,14 +14,16 @@ import TableOfContents from '@/components/TableOfContents'
  *
  * @typedef {object} PostProps
  * @prop {object}   post       - Post metadata
- * @prop {object}   blockMap   - Post block data
+ * @prop {?object}  blockMap   - Post block data
  * @prop {string}   emailHash  - Author email hash (for Gravatar)
  * @prop {boolean} [fullWidth] - Whether in full-width mode
+ * @prop {string}  [contentState] - Content rendering state
  */
 export default function Post (props) {
   const BLOG = useConfig()
-  const { post, blockMap, emailHash, fullWidth = false } = props
+  const { post, blockMap, emailHash, fullWidth = false, contentState = 'ready' } = props
   const { dark } = useTheme()
+  const canRenderContent = contentState === 'ready' && blockMap?.block && Object.keys(blockMap.block).length > 0
 
   return (
     <article className={cn('flex flex-col', fullWidth ? 'md:px-24' : 'items-center')}>
@@ -64,12 +66,22 @@ export default function Post (props) {
       <div className="self-stretch -mt-4 flex flex-col items-center lg:flex-row lg:items-stretch">
         {!fullWidth && <div className="flex-1 hidden lg:block" />}
         <div className={fullWidth ? 'flex-1 pr-4' : 'flex-none w-full max-w-2xl px-4'}>
-          <NotionRenderer recordMap={blockMap} fullPage={false} darkMode={dark} />
+          {canRenderContent
+            ? (
+              <NotionRenderer recordMap={blockMap} fullPage={false} darkMode={dark} />
+              )
+            : (
+              <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
+                Content is temporarily unavailable for this post. Metadata is still available and the page will recover on the next successful regeneration.
+              </div>
+              )}
         </div>
         <div className={cn('order-first lg:order-[unset] w-full lg:w-auto max-w-2xl lg:max-w-[unset] lg:min-w-[160px]', fullWidth ? 'flex-none' : 'flex-1')}>
           {/* `65px` is the height of expanded nav */}
           {/* TODO: Remove the magic number */}
-          <TableOfContents blockMap={blockMap} className="pt-3 sticky" style={{ top: '65px' }} />
+          {canRenderContent && (
+            <TableOfContents blockMap={blockMap} className="pt-3 sticky" style={{ top: '65px' }} />
+          )}
         </div>
       </div>
     </article>
@@ -78,7 +90,8 @@ export default function Post (props) {
 
 Post.propTypes = {
   post: PropTypes.object.isRequired,
-  blockMap: PropTypes.object.isRequired,
+  blockMap: PropTypes.object,
   emailHash: PropTypes.string.isRequired,
-  fullWidth: PropTypes.bool
+  fullWidth: PropTypes.bool,
+  contentState: PropTypes.string
 }

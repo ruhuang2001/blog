@@ -1,3 +1,4 @@
+import { DEFAULT_REVALIDATE_SECONDS } from '@/lib/server/config'
 import { getAllPosts, getAllTagsFromPosts } from '@/lib/notion'
 import SearchLayout from '@/layouts/search'
 
@@ -12,6 +13,6 @@ export async function getStaticProps () {
       tags,
       posts
     },
-    revalidate: 1
+    revalidate: DEFAULT_REVALIDATE_SECONDS
   }
 }

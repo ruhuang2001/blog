@@ -1,5 +1,4 @@
-import { clientConfig } from '@/lib/server/config'
-
+import { DEFAULT_REVALIDATE_SECONDS, publicConfig, serverConfig } from '@/lib/server/config'
 import { useRouter } from 'next/router'
 import cn from 'classnames'
 import { getAllPosts, getPostBlocks } from '@/lib/notion'
@@ -9,14 +8,12 @@ import { createHash } from 'crypto'
 import Container from '@/components/Container'
 import Post from '@/components/Post'
 import Comments from '@/components/Comments'
+import { hasRenderableContent } from '@/lib/notion/adapter'
 
-export default function BlogPost ({ post, blockMap, emailHash }) {
+export default function BlogPost ({ post, blockMap, emailHash, contentState }) {
   const router = useRouter()
   const BLOG = useConfig()
   const locale = useLocale()
-
-  // TODO: It would be better to render something
-  if (router.isFallback) return null
 
   const fullWidth = post.fullWidth ?? false
 
@@ -35,6 +32,7 @@ export default function BlogPost ({ post, blockMap, emailHash }) {
         blockMap={blockMap}
         emailHash={emailHash}
         fullWidth={fullWidth}
+        contentState={contentState}
       />
 
       {/* Back and Top */}
@@ -73,8 +71,8 @@ export default function BlogPost ({ post, blockMap, emailHash }) {
 export async function getStaticPaths () {
   const posts = await getAllPosts({ includePages: true })
   return {
-    paths: posts.map(row => `${clientConfig.path}/${row.slug}`),
-    fallback: true
+    paths: posts.map(row => `${publicConfig.path}/${row.slug}`),
+    fallback: 'blocking'
   }
 }
 
@@ -84,15 +82,29 @@ export async function getStaticProps ({ params: { slug } }) {
 
   if (!post) return { notFound: true }
 
-  const blockMap = await getPostBlocks(post.id)
+  let blockMap = null
+  let contentState = 'ready'
+
+  try {
+    blockMap = await getPostBlocks(post.id)
+
+    if (!hasRenderableContent(blockMap, post.id)) {
+      contentState = 'degraded'
+      blockMap = null
+    }
+  } catch (error) {
+    console.error(`Failed to fetch blocks for post "${post.slug}":`, error)
+    contentState = 'degraded'
+  }
+
   const emailHash = createHash('md5')
-    .update(clientConfig.email)
+    .update(serverConfig.email || '')
     .digest('hex')
     .trim()
     .toLowerCase()
 
   return {
-    props: { post, blockMap, emailHash },
-    revalidate: 1
+    props: { post, blockMap, emailHash, contentState },
+    revalidate: DEFAULT_REVALIDATE_SECONDS
   }
 }

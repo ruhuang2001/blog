@@ -1,4 +1,4 @@
-import { clientConfig } from '@/lib/server/config'
+import { DEFAULT_REVALIDATE_SECONDS, publicConfig } from '@/lib/server/config'
 
 import Container from '@/components/Container'
 import BlogPost from '@/components/BlogPost'
@@ -8,16 +8,16 @@ import { useConfig } from '@/lib/config'
 
 export async function getStaticProps () {
   const posts = await getAllPosts({ includePages: false })
-  const postsToShow = posts.slice(0, clientConfig.postsPerPage)
+  const postsToShow = posts.slice(0, publicConfig.postsPerPage)
   const totalPosts = posts.length
-  const showNext = totalPosts > clientConfig.postsPerPage
+  const showNext = totalPosts > publicConfig.postsPerPage
   return {
     props: {
       page: 1, // current page is 1
       postsToShow,
       showNext
     },
-    revalidate: 1
+    revalidate: DEFAULT_REVALIDATE_SECONDS
   }
 }
 

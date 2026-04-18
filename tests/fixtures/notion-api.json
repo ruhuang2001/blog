@@ -1,0 +1,275 @@
+{
+  "pages": {
+    "11111111-1111-1111-1111-111111111111": {
+      "block": {
+        "11111111-1111-1111-1111-111111111111": {
+          "value": {
+            "value": {
+              "id": "11111111-1111-1111-1111-111111111111",
+              "type": "collection_view_page",
+              "collection_id": "22222222-2222-2222-2222-222222222222",
+              "view_ids": [
+                "33333333-3333-3333-3333-333333333333"
+              ]
+            },
+            "role": "reader"
+          }
+        }
+      },
+      "collection": {
+        "22222222-2222-2222-2222-222222222222": {
+          "value": {
+            "value": {
+              "id": "22222222-2222-2222-2222-222222222222",
+              "schema": {
+                "title": {
+                  "name": "title",
+                  "type": "title"
+                },
+                "slug": {
+                  "name": "slug",
+                  "type": "text"
+                },
+                "type": {
+                  "name": "type",
+                  "type": "select"
+                },
+                "status": {
+                  "name": "status",
+                  "type": "select"
+                },
+                "summary": {
+                  "name": "summary",
+                  "type": "text"
+                },
+                "tags": {
+                  "name": "tags",
+                  "type": "multi_select"
+                }
+              }
+            },
+            "role": "reader"
+          }
+        }
+      },
+      "collection_view": {
+        "33333333-3333-3333-3333-333333333333": {
+          "value": {
+            "value": {
+              "id": "33333333-3333-3333-3333-333333333333",
+              "type": "table"
+            },
+            "role": "reader"
+          }
+        }
+      }
+    },
+    "44444444-4444-4444-4444-444444444444": {
+      "block": {
+        "44444444-4444-4444-4444-444444444444": {
+          "value": {
+            "value": {
+              "id": "44444444-4444-4444-4444-444444444444",
+              "type": "page",
+              "parent_id": "22222222-2222-2222-2222-222222222222",
+              "parent_table": "collection",
+              "properties": {
+                "title": [
+                  [
+                    "Fixture Post"
+                  ]
+                ]
+              },
+              "content": [
+                "66666666-6666-6666-6666-666666666666",
+                "77777777-7777-7777-7777-777777777777"
+              ]
+            },
+            "role": "reader"
+          }
+        },
+        "66666666-6666-6666-6666-666666666666": {
+          "value": {
+            "value": {
+              "id": "66666666-6666-6666-6666-666666666666",
+              "type": "header",
+              "parent_id": "44444444-4444-4444-4444-444444444444",
+              "parent_table": "block",
+              "properties": {
+                "title": [
+                  [
+                    "Fixture Heading"
+                  ]
+                ]
+              }
+            },
+            "role": "reader"
+          }
+        },
+        "77777777-7777-7777-7777-777777777777": {
+          "value": {
+            "value": {
+              "id": "77777777-7777-7777-7777-777777777777",
+              "type": "text",
+              "parent_id": "44444444-4444-4444-4444-444444444444",
+              "parent_table": "block",
+              "properties": {
+                "title": [
+                  [
+                    "Fixture body copy for smoke tests."
+                  ]
+                ]
+              }
+            },
+            "role": "reader"
+          }
+        }
+      }
+    },
+    "55555555-5555-5555-5555-555555555555": {
+      "block": {
+        "55555555-5555-5555-5555-555555555555": {
+          "value": {
+            "value": {
+              "id": "55555555-5555-5555-5555-555555555555",
+              "type": "page",
+              "parent_id": "22222222-2222-2222-2222-222222222222",
+              "parent_table": "collection",
+              "properties": {
+                "title": [
+                  [
+                    "Fixture About"
+                  ]
+                ]
+              },
+              "content": [
+                "88888888-8888-8888-8888-888888888888"
+              ]
+            },
+            "role": "reader"
+          }
+        },
+        "88888888-8888-8888-8888-888888888888": {
+          "value": {
+            "value": {
+              "id": "88888888-8888-8888-8888-888888888888",
+              "type": "text",
+              "parent_id": "55555555-5555-5555-5555-555555555555",
+              "parent_table": "block",
+              "properties": {
+                "title": [
+                  [
+                    "Fixture about page."
+                  ]
+                ]
+              }
+            },
+            "role": "reader"
+          }
+        }
+      }
+    }
+  },
+  "collectionData": {
+    "22222222-2222-2222-2222-222222222222:33333333-3333-3333-3333-333333333333": {
+      "result": {
+        "reducerResults": {
+          "collection_group_results": {
+            "blockIds": [
+              "44444444-4444-4444-4444-444444444444",
+              "55555555-5555-5555-5555-555555555555"
+            ]
+          }
+        }
+      },
+      "recordMap": {
+        "block": {
+          "44444444-4444-4444-4444-444444444444": {
+            "value": {
+              "id": "44444444-4444-4444-4444-444444444444",
+              "type": "page",
+              "parent_id": "22222222-2222-2222-2222-222222222222",
+              "parent_table": "collection",
+              "properties": {
+                "title": [
+                  [
+                    "Fixture Post"
+                  ]
+                ],
+                "slug": [
+                  [
+                    "fixture-post"
+                  ]
+                ],
+                "type": [
+                  [
+                    "Post"
+                  ]
+                ],
+                "status": [
+                  [
+                    "Published"
+                  ]
+                ],
+                "summary": [
+                  [
+                    "Fixture summary for smoke and regression tests."
+                  ]
+                ],
+                "tags": [
+                  [
+                    "Testing,Fixtures"
+                  ]
+                ]
+              },
+              "created_time": 1704067200000,
+              "format": {
+                "page_full_width": false
+              }
+            }
+          },
+          "55555555-5555-5555-5555-555555555555": {
+            "value": {
+              "id": "55555555-5555-5555-5555-555555555555",
+              "type": "page",
+              "parent_id": "22222222-2222-2222-2222-222222222222",
+              "parent_table": "collection",
+              "properties": {
+                "title": [
+                  [
+                    "Fixture About"
+                  ]
+                ],
+                "slug": [
+                  [
+                    "about"
+                  ]
+                ],
+                "type": [
+                  [
+                    "Page"
+                  ]
+                ],
+                "status": [
+                  [
+                    "Published"
+                  ]
+                ],
+                "summary": [
+                  [
+                    "Fixture page entry."
+                  ]
+                ]
+              },
+              "created_time": 1704153600000,
+              "format": {
+                "page_full_width": true
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "users": {}
+}

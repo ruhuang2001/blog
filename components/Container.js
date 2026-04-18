@@ -18,7 +18,6 @@ const Container = ({ children, layout, fullWidth, ...customMeta }) => {
   return (
     <div>
       <Head>
-        <meta name="google-site-verification" content="BsiVappP2yaPDGGylGn7bEAJz1UqK1Li99D25eKLfpE" />
         <title>{meta.title}</title>
         {/* <meta content={BLOG.darkBackground} name="theme-color" /> */}
         <meta name="robots" content="follow, index" />

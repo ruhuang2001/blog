@@ -109,6 +109,34 @@ const components = {
 
 const mapPageUrl = id => `https://www.notion.so/${id.replace(/-/g, '')}`
 
+export function decorateRecordMap (recordMap) {
+  if (!recordMap?.block) return recordMap
+
+  const block = {}
+
+  for (const [key, entry] of Object.entries(recordMap.block)) {
+    const value = entry?.value
+
+    if (value?.type === 'toggle') {
+      block[key] = {
+        ...entry,
+        value: {
+          ...value,
+          type: 'toggle_nobelium'
+        }
+      }
+      continue
+    }
+
+    block[key] = entry
+  }
+
+  return {
+    ...recordMap,
+    block
+  }
+}
+
 /**
  * Notion page renderer
  *
@@ -118,22 +146,12 @@ const mapPageUrl = id => `https://www.notion.so/${id.replace(/-/g, '')}`
  */
 export default function NotionRenderer (props) {
   const config = useConfig()
+  const recordMap = decorateRecordMap(props.recordMap)
 
   const font = {
     'sans-serif': FONTS_SANS,
     'serif': FONTS_SERIF
   }[config.font]
-
-  // Mark block types to be custom rendered by appending a suffix
-  if (props.recordMap) {
-    for (const { value: block } of Object.values(props.recordMap.block)) {
-      switch (block?.type) {
-        case 'toggle':
-          block.type += '_nobelium'
-          break
-      }
-    }
-  }
 
   return (
     <>
@@ -148,6 +166,7 @@ export default function NotionRenderer (props) {
         components={components}
         mapPageUrl={mapPageUrl}
         {...props}
+        recordMap={recordMap}
       />
     </>
   )

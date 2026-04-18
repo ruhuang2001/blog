@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CI: true
+  NOTION_API_USE_FIXTURES: '1'
+  NOTION_API_FIXTURE_PATH: tests/fixtures/notion-api.json
+  NOTION_PAGE_ID: 11111111111111111111111111111111
+  VERCEL_ENV: production
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Smoke test production build
+        run: |
+          pnpm start > /tmp/blog-start.log 2>&1 &
+          SERVER_PID=$!
+          trap "kill $SERVER_PID" EXIT
+
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://127.0.0.1:3000/ | grep -q 'Fixture Post'
+          curl -fsS http://127.0.0.1:3000/fixture-post | grep -q 'Fixture Post'
+          curl -fsS http://127.0.0.1:3000/tag/Testing | grep -q 'Fixture Post'
+          curl -fsS http://127.0.0.1:3000/feed | grep -q '<feed'
