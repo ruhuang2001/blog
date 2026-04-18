@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import cn from 'classnames'
+import Image from 'next/image'
 import { useConfig } from '@/lib/config'
 import useTheme from '@/lib/theme'
 import FormattedDate from '@/components/FormattedDate'
@@ -40,7 +41,7 @@ export default function Post (props) {
         )}>
           <div className="flex items-center mb-2 text-sm leading-6">
             <a href={BLOG.socialLink || '#'} className="flex items-center hover:text-black dark:hover:text-gray-100 transition-colors">
-              <img
+              <Image
                 alt={BLOG.author}
                 width={24}
                 height={24}

@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import axios from 'axios'
+import Image from 'next/image'
 import Container from '@/components/Container'
 import FormattedDate from '@/components/FormattedDate'
 import { useConfig } from '@/lib/config'
@@ -7,6 +9,37 @@ import { extractTalksFromHtml } from '@/lib/talks'
 
 const TALKS_SOURCE_URL = 'https://ruhuang2001.github.io/'
 const TALKS_SOURCE_ANCHOR = `${TALKS_SOURCE_URL}#talks`
+
+const getTalkImageCandidates = talk => {
+  const baseUrl = talk.url.endsWith('/') ? talk.url : `${talk.url}/`
+  const slug = talk.url.split('/').filter(Boolean).pop()
+
+  return [
+    `${baseUrl}og-image.png`,
+    `${baseUrl}screenshots/1.png`,
+    `${baseUrl}${slug}.png`,
+    'https://www.notion.so/images/page-cover/web_logistics.jpg'
+  ]
+}
+
+function TalkThumbnail ({ talk }) {
+  const [srcIndex, setSrcIndex] = useState(0)
+  const sources = getTalkImageCandidates(talk)
+
+  return (
+    <Image
+      src={sources[srcIndex]}
+      alt={talk.title}
+      fill
+      unoptimized
+      sizes="(min-width: 768px) 50vw, 100vw"
+      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+      onError={() => {
+        setSrcIndex(current => (current < sources.length - 1 ? current + 1 : current))
+      }}
+    />
+  )
+}
 
 export async function getStaticProps () {
   let talks = []
@@ -50,24 +83,7 @@ export default function TalksPage ({ talks, sourceUrl }) {
               className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:shadow-lg transition-all duration-300"
             >
               <div className="aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800 relative">
-                <img
-                  src={`${talk.url.endsWith('/') ? talk.url : talk.url + '/'}og-image.png`}
-                  alt={talk.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  onError={(e) => {
-                    const currentSrc = e.target.src
-                    const baseUrl = talk.url.endsWith('/') ? talk.url : talk.url + '/'
-                    const slugPng = `${baseUrl}${talk.url.split('/').filter(Boolean).pop()}.png`
-                    if (currentSrc.endsWith('og-image.png')) {
-                      e.target.src = `${baseUrl}screenshots/1.png`
-                    } else if (currentSrc.endsWith('screenshots/1.png')) {
-                      e.target.src = slugPng
-                    } else if (currentSrc.endsWith('.png')) {
-                      e.target.onerror = null
-                      e.target.src = 'https://www.notion.so/images/page-cover/web_logistics.jpg' // Fallback
-                    }
-                  }}
-                />
+                <TalkThumbnail talk={talk} />
               </div>
               <div className="p-4 flex flex-col gap-2">
                 <h2 className="text-lg font-bold text-black dark:text-gray-100 group-hover:text-blue-500 transition-colors line-clamp-2">

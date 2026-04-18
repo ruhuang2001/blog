@@ -6,6 +6,8 @@ module.exports = {
     remotePatterns: [
       { protocol: 'https', hostname: 'gravatar.com', pathname: '/**' },
       { protocol: 'https', hostname: 'og-image-craigary.vercel.app', pathname: '/**' },
+      { protocol: 'https', hostname: 'ruhuang2001.github.io', pathname: '/**' },
+      { protocol: 'https', hostname: 'www.notion.so', pathname: '/**' },
       { protocol: 'https', hostname: 'fonts.googleapis.com', pathname: '/**' },
       { protocol: 'https', hostname: 'fonts.gstatic.com', pathname: '/**' }
     ],
