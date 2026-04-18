@@ -84,6 +84,7 @@ const Waline = ({ path }) => {
     requiredMeta,
     walineConfig.wordLimit,
     walineConfig.locale,
+    hasWordLimit,
     hasLocale
   ])
 

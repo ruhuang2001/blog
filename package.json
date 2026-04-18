@@ -4,7 +4,13 @@
       "canvas"
     ],
     "overrides": {
-      "lodash-es": "4.17.23"
+      "brace-expansion": "1.1.14",
+      "dompurify": "3.4.0",
+      "flatted": "3.4.2",
+      "lodash-es": "4.18.1",
+      "picomatch@2.3.1": "2.3.2",
+      "picomatch@4.0.3": "4.0.4",
+      "vite@7.3.1": "7.3.2"
     }
   },
   "name": "nobelium",
@@ -34,14 +40,14 @@
   },
   "dependencies": {
     "@waline/client": "^3.3.3",
-    "axios": "^1.6.1",
+    "axios": "^1.15.0",
     "canvas": "^3.2.1",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.10",
     "feed": "^5.2.0",
     "katex": "^0.16.27",
     "mermaid": "^11.12.2",
-    "next": "^16.1.5",
+    "next": "^16.2.4",
     "notion-client": "^7.7.3",
     "notion-utils": "^7.7.3",
     "preact": "^10.19.2",
@@ -59,11 +65,12 @@
   "devDependencies": {
     "autoprefixer": "^10.4.16",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^16.1.5",
+    "eslint-config-next": "^16.2.4",
     "next-sitemap": "^4.2.3",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.4.19",
-    "vitest": "^4.0.18"
+    "vite": "7.3.2",
+    "vitest": "^4.1.4"
   },
   "bugs": {
     "url": "https://github.com/craigary/nobelium/issues",
