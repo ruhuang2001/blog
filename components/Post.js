@@ -47,6 +47,7 @@ export default function Post (props) {
                 height={24}
                 src={`https://gravatar.com/avatar/${emailHash}`}
                 className="h-6 w-6 rounded-full"
+                unoptimized
               />
               <p className="ml-2 md:block">{BLOG.author}</p>
             </a>
