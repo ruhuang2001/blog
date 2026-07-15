@@ -5,7 +5,7 @@ import Container from '@/components/Container'
 import FormattedDate from '@/components/FormattedDate'
 import { useConfig } from '@/lib/config'
 import { useLocale } from '@/lib/locale'
-import { extractTalksFromHtml } from '@/lib/talks'
+import { extractTalksFromHtml, mergeTalks } from '@/lib/talks'
 
 const TALKS_SOURCE_URL = 'https://ruhuang2001.github.io/'
 const TALKS_SOURCE_ANCHOR = `${TALKS_SOURCE_URL}#talks`
@@ -15,8 +15,10 @@ const getTalkImageCandidates = talk => {
   const slug = talk.url.split('/').filter(Boolean).pop()
 
   return [
-    `${baseUrl}og-image.png`,
+    `/talks/${slug}.png`,
     `${baseUrl}screenshots/1.png`,
+    `${baseUrl}cover.jpg`,
+    `${baseUrl}og-image.png`,
     `${baseUrl}${slug}.png`,
     'https://www.notion.so/images/page-cover/web_logistics.jpg'
   ]
@@ -46,9 +48,10 @@ export async function getStaticProps () {
 
   try {
     const response = await axios.get(TALKS_SOURCE_URL, { timeout: 10000 })
-    talks = extractTalksFromHtml(response.data)
+    talks = mergeTalks(extractTalksFromHtml(response.data))
   } catch (error) {
     console.warn('Failed to fetch talks:', error.message)
+    talks = mergeTalks([])
   }
 
   return {
