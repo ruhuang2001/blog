@@ -1,5 +1,4 @@
-import { useEffect } from 'react'
-import dayjs from 'dayjs'
+import dayjs from '@/lib/dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { useConfig } from '@/lib/config'
 
@@ -21,12 +20,9 @@ const localeMap = {
 }
 
 export default function FormattedDate ({ date }) {
-  const lang = useConfig().lang.toLowerCase()
-  const locale = localeMap[lang] || 'en'
+  const { lang, timezone } = useConfig()
+  const normalizedLang = lang.toLowerCase()
+  const locale = localeMap[normalizedLang] || 'en'
 
-  useEffect(() => {
-    dayjs.locale(locale)
-  }, [locale])
-
-  return <span>{dayjs(date).locale(locale).format('ll')}</span>
+  return <span>{dayjs(date).tz(timezone).locale(locale).format('ll')}</span>
 }
