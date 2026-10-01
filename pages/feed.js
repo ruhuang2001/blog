@@ -10,7 +10,10 @@ export async function getServerSideProps ({ res }) {
     xmlFeed = await generateRss(latestPosts)
   } catch (error) {
     console.error('Failed to generate RSS feed:', error)
-    xmlFeed = await generateRss([])
+    res.statusCode = 503
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    res.setHeader('Cache-Control', 'no-store')
+    xmlFeed = 'Feed temporarily unavailable. Please try again later.'
   }
 
   res.write(xmlFeed)
