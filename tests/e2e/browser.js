@@ -62,6 +62,7 @@ async (page) => {
     await page.locator('.notion svg[id^="mermaid"] .node').first().waitFor()
     assert((await page.locator('.notion svg[id^="mermaid"]').textContent()).includes('Fixture Start'), 'Diagram labels missing')
     await page.getByText('Fixture italic text', { exact: true }).waitFor()
+    await page.locator('.notion-equation .katex').first().waitFor()
     assert(await page.locator('em').filter({ hasText: 'Fixture italic text' }).count() > 0, 'Italic semantic markup missing')
     await page.evaluate(() => document.fonts.ready)
     assert(await page.evaluate(() => document.fonts.check('italic 16px "IBM Plex Sans"')), 'Italic font did not load on demand')
@@ -135,6 +136,76 @@ async (page) => {
     assert(JSON.stringify(entries.map(entry => entry.title)) === JSON.stringify(expectedTitles), 'RSS entries changed order or count')
     assert(entries[0].content.includes('Fixture body copy') && entries[0].content.includes('Fixture Collection Row') && entries[0].content.includes('Fixture toggle child'), 'RSS lost article body, nested collection or toggle content')
     assert(entries[8].summary === 'Fixture summary 9.' && entries[8].content === '', 'Failed article must retain summary and empty body')
+  })
+  await check('image optimizer accepts local assets and denies remote URLs', async () => {
+    report.metrics.images = []
+    for (const source of ['/favicon.png', '/talks/from-chat-to-agent.png']) {
+      const response = await page.request.get(`${origin}/_next/image?url=${encodeURIComponent(source)}&w=64&q=75`)
+      const contentType = response.headers()['content-type'] || ''
+      const bytes = (await response.body()).length
+      report.metrics.images.push({ source, status: response.status(), contentType, bytes })
+      assert(response.ok(), `Local optimizer rejected ${source}: ${response.status()}`)
+      assert(contentType.startsWith('image/') && bytes > 0, `Optimizer did not return image bytes for ${source}`)
+    }
+    // The absolute URL is deliberately outside remotePatterns, but still local.
+    const source = `${origin}/favicon.png?e2e-forbidden-remote=1`
+    const response = await page.request.get(`${origin}/_next/image?url=${encodeURIComponent(source)}&w=64&q=75`)
+    const reason = await response.text()
+    report.metrics.images.push({ source, status: response.status(), reason })
+    assert(response.status() === 400 && /not allowed/i.test(reason), 'Forbidden remote image must be rejected by host validation')
+  })
+  await check('Mermaid and JSON-LD reject executable content and retain fallbacks', async () => {
+    const malformedSource = 'graph TD\n  BROKEN[Unclosed security fixture'
+    const metadataSource = '</script><script>window.__e2eMetadataExecuted=true</script>'
+    await page.addInitScript(() => {
+      window.__e2eMermaidExecuted = false
+      window.__e2eMetadataExecuted = false
+      window.__e2eSecurityRejections = []
+      window.e2eMermaidCallback = () => { window.__e2eMermaidExecuted = true }
+      window.addEventListener('unhandledrejection', event => { window.__e2eSecurityRejections.push(String(event.reason)) })
+    })
+    await visit('/fixture-post-8')
+    const unsafeDiagram = page.locator('.notion svg[id^="mermaid-aaaaaaaa-aaaa-aaaa-aaaa-000000000802-"]')
+    const healthyDiagram = page.locator('.notion svg[id^="mermaid-aaaaaaaa-aaaa-aaaa-aaaa-000000000804-"]')
+    const fallback = page.getByRole('status').filter({ hasText: 'Diagram could not be rendered.' })
+    const assertSafeRendering = async () => {
+      await unsafeDiagram.locator('.node').first().waitFor()
+      await healthyDiagram.locator('.node').first().waitFor()
+      await page.locator('svg[id^="mermaid-aaaaaaaa-aaaa-aaaa-aaaa-000000000805-"] .katex').first().waitFor()
+      await fallback.waitFor()
+      assert((await fallback.locator('pre').innerText()) === malformedSource, 'Malformed diagram must preserve exact source')
+      assert(await fallback.locator('svg').count() === 0, 'Fallback retained stale diagram SVG')
+      assert(await page.locator('svg[id^="mermaid-aaaaaaaa-aaaa-aaaa-aaaa-000000000803-"]').count() === 0, 'Malformed diagram left an SVG outside its fallback')
+      assert((await healthyDiagram.textContent()).includes('Security healthy start'), 'Malformed diagram blocked the healthy sibling')
+      const dangerousDOM = await unsafeDiagram.evaluate(svg => [...svg.querySelectorAll('*')].flatMap(element =>
+        [...element.attributes].filter(attribute => /^on/i.test(attribute.name) || /^(?:href|xlink:href|src)$/i.test(attribute.name) && /^\s*javascript:/i.test(attribute.value)).map(attribute => `${element.tagName}:${attribute.name}`)
+      ))
+      assert(!dangerousDOM.length, `Mermaid retained executable attributes: ${dangerousDOM.join(', ')}`)
+      assert(await unsafeDiagram.locator('script').count() === 0, 'Mermaid retained a script element')
+      for (const node of await unsafeDiagram.locator('.node').all()) await node.click()
+      assert(page.url() === `${origin}/fixture-post-8`, 'Unsafe diagram link navigated away')
+      const execution = await page.evaluate(() => ({ mermaid: window.__e2eMermaidExecuted, metadata: window.__e2eMetadataExecuted, rejections: window.__e2eSecurityRejections }))
+      assert(!execution.mermaid && !execution.metadata, 'Untrusted diagram or metadata executed JavaScript')
+      assert(!execution.rejections.length, `Unhandled diagram rejection: ${JSON.stringify(execution.rejections)}`)
+    }
+    await assertSafeRendering()
+    const metadata = await page.locator('script[type="application/ld+json"]').allTextContents()
+    assert(metadata.some(value => JSON.parse(value).description === metadataSource), 'Escaped JSON-LD must preserve the original description')
+    assert(await page.locator('script').evaluateAll(scripts => !scripts.some(script => script.type !== 'application/ld+json' && script.textContent.trim() === 'window.__e2eMetadataExecuted=true')), 'JSON-LD injected an executable script element')
+    const initialFill = await healthyDiagram.locator('.node rect').first().evaluate(rect => getComputedStyle(rect).fill)
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await page.waitForFunction(fill => {
+      const rect = document.querySelector('svg[id^="mermaid-aaaaaaaa-aaaa-aaaa-aaaa-000000000804-"] .node rect')
+      return document.documentElement.classList.contains('dark') && rect && getComputedStyle(rect).fill !== fill
+    }, initialFill)
+    await assertSafeRendering()
+    await page.emulateMedia({ colorScheme: 'light' })
+    await page.waitForFunction(fill => {
+      const rect = document.querySelector('svg[id^="mermaid-aaaaaaaa-aaaa-aaaa-aaaa-000000000804-"] .node rect')
+      return !document.documentElement.classList.contains('dark') && rect && getComputedStyle(rect).fill === fill
+    }, initialFill)
+    await assertSafeRendering()
+    await screenshot('security')
   })
   page.off('pageerror', onError)
   page.off('console', onConsole)

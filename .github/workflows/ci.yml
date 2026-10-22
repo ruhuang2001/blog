@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
@@ -27,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -35,6 +38,9 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      - name: Verify patched dependency guard
+        run: pnpm test:braces
 
       - name: Test
         run: pnpm test
@@ -59,3 +65,17 @@ jobs:
           curl -fsS http://127.0.0.1:3000/fixture-post | grep -q 'Fixture Post'
           curl -fsS http://127.0.0.1:3000/tag/Testing | grep -q 'Fixture Post'
           curl -fsS http://127.0.0.1:3000/feed | grep -q '<feed'
+
+      - name: Browser security and rendering regression
+        run: bash tests/e2e/run.sh
+
+      - name: ISR and upstream failure regression
+        run: node tests/e2e/notion-failure.cjs
+
+      - name: Upload repeatable E2E evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-evidence
+          path: output/playwright/
+          retention-days: 14

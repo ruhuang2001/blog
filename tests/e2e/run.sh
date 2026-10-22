@@ -9,7 +9,7 @@ export NOTION_PAGE_ID=11111111111111111111111111111111
 export VERCEL_ENV=production
 port="${E2E_PORT:-3100}"
 session="blog-e2e-$$"
-pw() { npx --yes --package @playwright/cli@0.1.22 playwright-cli -s="$session" "$@"; }
+pw() { npm_config_audit=false npx --yes --prefer-offline --package @playwright/cli@0.1.22 playwright-cli -s="$session" "$@"; }
 
 # Refuse to test a different process accidentally listening on this port.
 node -e 'const s = require("node:net").createServer(); s.on("error", () => process.exit(1)); s.listen(Number(process.argv[1]), () => s.close())' "$port"

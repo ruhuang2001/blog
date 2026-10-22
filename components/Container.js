@@ -74,7 +74,7 @@ const Container = ({ children, layout, fullWidth, ...customMeta }) => {
                   author: { '@type': 'Person', name: BLOG.author },
                   datePublished: meta.date,
                   url: `${BLOG.link}/${meta.slug || ''}`
-                })
+                }).replace(/</g, '\\u003c')
               }}
             />
           </>
