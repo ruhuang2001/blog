@@ -80,8 +80,10 @@
     "autoprefixer": "^10.6.1",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.2",
+    "js-yaml": "4.3.2",
     "next-sitemap": "^4.2.3",
     "postcss": "^8.5.23",
+    "semver": "^7.8.5",
     "tailwindcss": "^3.4.19",
     "vite": "7.3.7",
     "vitest": "^4.1.12"

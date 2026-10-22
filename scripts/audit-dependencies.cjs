@@ -12,14 +12,8 @@ const path = require('node:path')
 const crypto = require('node:crypto')
 const { execFile } = require('node:child_process')
 const root = path.resolve(__dirname, '..')
-function installed(name) {
-  const base = path.join(root, 'node_modules/.pnpm')
-  const entries = fs.readdirSync(base).filter(x => x.startsWith(name + '@')).sort()
-  if (!entries.length) throw new Error('Install dependencies first: ' + name)
-  return require(path.join(base, entries.at(-1), 'node_modules', name))
-}
-const yaml = installed('js-yaml')
-const semver = installed('semver')
+const yaml = require('js-yaml')
+const semver = require('semver')
 const lockPath = path.join(root, 'pnpm-lock.yaml')
 const lockText = fs.readFileSync(lockPath, 'utf8')
 const hash = text => crypto.createHash('sha256').update(text).digest('hex')
@@ -120,8 +114,9 @@ async function main() {
         const name = alert.dependency.package.name
         const versions = packages[name] || []
         const range = alert.security_vulnerability.vulnerable_version_range
-        const affectedVersions = versions.filter(version => matches(version, range))
-        return { number: alert.number, ghsaId: alert.security_advisory.ghsa_id, package: name, vulnerableVersionRange: range, currentVersions: versions, affectedVersions, status: affectedVersions.length ? 'still vulnerable' : versions.length ? 'fixed version' : 'removed dependency' }
+        const withdrawn = Boolean(alert.security_advisory.withdrawn_at)
+        const affectedVersions = withdrawn ? [] : versions.filter(version => matches(version, range))
+        return { number: alert.number, ghsaId: alert.security_advisory.ghsa_id, package: name, vulnerableVersionRange: range, currentVersions: versions, affectedVersions, status: withdrawn ? 'withdrawn advisory' : affectedVersions.length ? 'still vulnerable' : versions.length ? 'fixed version' : 'removed dependency' }
       }) }
     } else report.baseline = { source: beforePath, status: 'optional historical comparison unavailable' }
     if (hash(fs.readFileSync(lockPath, 'utf8')) !== report.lockfileSha256) throw new Error('Lockfile changed during audit; rerun required')

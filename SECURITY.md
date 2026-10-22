@@ -22,6 +22,9 @@ Reports, screenshots, logs, dependency versions, and the lockfile fingerprint
 are saved under `output/playwright/`. CI uploads E2E evidence even on failure.
 To compare a historical Dependabot snapshot, set `AUDIT_BASELINE` to a JSON array
 downloaded from the repository's Dependabot alerts API.
+The default optional baseline is `output/playwright/security/dependabot-before.json`;
+if absent, only the fresh full-lock audit runs. Withdrawn baseline advisories do
+not affect the result.
 
 ## Local braces mitigation
 

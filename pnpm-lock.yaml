@@ -103,12 +103,18 @@ importers:
       eslint-config-next:
         specifier: ^16.4.2
         version: 16.4.2(@typescript-eslint/parser@8.72.0(eslint@9.39.5(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.5(jiti@1.21.7))(typescript@5.9.3)
+      js-yaml:
+        specifier: 4.3.2
+        version: 4.3.2
       next-sitemap:
         specifier: ^4.2.3
         version: 4.2.3(next@16.4.2(@babel/core@7.29.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       postcss:
         specifier: 8.5.23
         version: 8.5.23
+      semver:
+        specifier: ^7.8.5
+        version: 7.8.5
       tailwindcss:
         specifier: ^3.4.19
         version: 3.4.19
