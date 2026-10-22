@@ -50,7 +50,7 @@
     "audit:dependencies": "node scripts/audit-dependencies.cjs"
   },
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=22.12.0",
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
