@@ -31,10 +31,11 @@ const components = {
   Code: CodeSwitch,
   // Database block
   Collection,
-  // Equation block & inline variant
+  // Keep the first server/client render empty until the lazy equation module loads.
+  // Otherwise cold loads can hydrate the following sibling against equation markup.
   Equation: dynamic(() => {
     return import('react-notion-x/build/third-party/equation').then(module => module.Equation)
-  }),
+  }, { ssr: false }),
   // PDF (Embed block)
   Pdf: dynamic(() => {
     return import('react-notion-x/build/third-party/pdf').then(module => module.Pdf)

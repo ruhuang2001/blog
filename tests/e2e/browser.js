@@ -27,6 +27,23 @@ async (page) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.emulateMedia({ colorScheme: 'light' })
 
+  await check('cold article load hydrates lazy equations', async () => {
+    const context = await page.context().browser().newContext()
+    try {
+      const cold = await context.newPage()
+      const errors = []
+      cold.on('pageerror', error => errors.push(error.message))
+      await cold.goto(origin + '/fixture-post', { waitUntil: 'domcontentloaded' })
+      await cold.locator('.notion-equation .katex').first().waitFor()
+      await cold.locator('.notion svg[id^="mermaid"] .node').first().waitFor()
+      await cold.locator('details summary').click()
+      assert(await cold.getByText('Fixture toggle child', { exact: true }).isVisible(), 'Cold article toggle failed')
+      assert(!errors.length, `Cold article runtime errors: ${JSON.stringify(errors)}`)
+    } finally {
+      await context.close()
+    }
+  })
+
   await check('home and pagination', async () => {
     await visit('/')
     assert(JSON.stringify(await titles()) === JSON.stringify(expectedTitles.slice(0, 7)), 'First page must contain posts 1–7 in order')

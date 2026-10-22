@@ -14,6 +14,8 @@ Failure modes to check before changing production code:
 - Pagination loses or duplicates published posts; RSS changes database order.
 - A missing article body breaks its page or the entire RSS feed.
 - Lazy code blocks lose highlighting or Mermaid diagrams after a theme change.
+- Cold article loads hydrate a following sibling against server-only lazy equation
+  markup; use a fresh browser context to cover this module-loading race.
 - Nested collection rows disappear or cause hydration errors.
 - Italic text loses its font; toggle children or heading navigation stop working.
 
