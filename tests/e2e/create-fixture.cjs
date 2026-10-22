@@ -18,6 +18,9 @@ for (let number = 2; number <= 9; number++) {
   post.properties.title = richText(`Fixture Post ${number}`)
   post.properties.slug = richText(`fixture-post-${number}`)
   post.properties.summary = richText(`Fixture summary ${number}.`)
+  if (number === 8) {
+    post.properties.summary = richText('</script><script>window.__e2eMetadataExecuted=true</script>')
+  }
   data.recordMap.block[postId] = { value: post }
   ids.push(postId)
   if (number === 9) continue // Deliberately exercise missing body recovery.
@@ -25,6 +28,29 @@ for (let number = 2; number <= 9; number++) {
   fixture.pages[postId] = { block: {
     [postId]: { value: { ...post, content: [textId] } },
     [textId]: { value: { id: textId, type: 'text', parent_id: postId, parent_table: 'block', properties: { title: richText(`Fixture body ${number}.`) } } }
+  } }
+}
+
+// Keep adversarial diagrams off the main article and its performance measurements.
+const securityPage = fixture.pages[id(8)]
+const securityDiagrams = [
+  [802, `graph TD
+  A["<img src='/favicon.png' onload='window.__e2eMermaidExecuted=true'>Security label"] --> B["Security target"]
+  click A call e2eMermaidCallback()
+  click B "javascript:window.__e2eMermaidExecuted=true" "Unsafe link"`],
+  [803, 'graph TD\n  BROKEN[Unclosed security fixture'],
+  [804, 'graph TD\n  A[Security healthy start] --> B[Security healthy end]'],
+  [805, 'graph TD\n  A["$$x^2 + y^2$$"] --> B["$$z^2$$"]']
+]
+for (const [number, source] of securityDiagrams) {
+  const blockId = id(number)
+  securityPage.block[id(8)].value.content.push(blockId)
+  securityPage.block[blockId] = { value: {
+    id: blockId,
+    type: 'code',
+    parent_id: id(8),
+    parent_table: 'block',
+    properties: { title: richText(source), language: richText('Mermaid') }
   } }
 }
 
@@ -39,6 +65,7 @@ function addBlock (number, type, title, extra = {}) {
 addBlock(201, 'code', 'const fixtureAnswer = 42;\nconsole.log(fixtureAnswer);', { properties: { title: richText('const fixtureAnswer = 42;\nconsole.log(fixtureAnswer);'), language: richText('JavaScript') } })
 addBlock(202, 'code', '', { properties: { title: richText('graph TD\n  A[Fixture Start] --> B[Fixture End]'), language: richText('Mermaid') } })
 addBlock(203, 'text', '', { properties: { title: [['Fixture italic text', [['i']]]] } })
+addBlock(206, 'equation', 'E = mc^2')
 const toggleId = addBlock(204, 'toggle', 'Fixture Toggle', { content: [id(205)] })
 page.block[id(205)] = { value: { id: id(205), type: 'text', parent_id: toggleId, parent_table: 'block', properties: { title: richText('Fixture toggle child') } } }
 

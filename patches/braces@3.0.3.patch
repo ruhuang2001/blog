@@ -1,0 +1,124 @@
+diff --git a/lib/compile.js b/lib/compile.js
+index dce69be..d25e48d 100644
+--- a/lib/compile.js
++++ b/lib/compile.js
+@@ -1,9 +1,12 @@
+ 'use strict';
+ 
++const { validateDepth } = require('./depth');
++
+ const fill = require('fill-range');
+ const utils = require('./utils');
+ 
+ const compile = (ast, options = {}) => {
++  validateDepth(ast);
+   const walk = (node, parent = {}) => {
+     const invalidBlock = utils.isInvalidBrace(parent);
+     const invalidNode = node.invalid === true && options.escapeInvalid === true;
+diff --git a/lib/depth.js b/lib/depth.js
+new file mode 100644
+index 0000000..a3c90b0
+--- /dev/null
++++ b/lib/depth.js
+@@ -0,0 +1,37 @@
++'use strict';
++
++// Bound every recursive walker independently of caller-controlled options.
++const MAX_DEPTH = 128;
++
++const checkDepth = depth => {
++  if (depth > MAX_DEPTH) {
++    const error = new RangeError(`Brace nesting exceeds maximum depth (${MAX_DEPTH})`);
++    error.code = 'ERR_BRACES_DEPTH';
++    throw error;
++  }
++};
++
++const validateDepth = (ast, checkParents = false) => {
++  const pending = [{ node: ast, depth: 0 }];
++  while (pending.length > 0) {
++    const { node, depth } = pending.pop();
++    if (!node || !node.nodes) continue;
++    checkDepth(depth);
++
++    // expand also follows parent links on externally supplied ASTs.
++    if (checkParents) {
++      let parent = node;
++      let parentDepth = 0;
++      while (parent.type !== 'brace' && parent.type !== 'root' && parent.parent) {
++        checkDepth(++parentDepth);
++        parent = parent.parent;
++      }
++    }
++
++    for (const child of node.nodes) {
++      pending.push({ node: child, depth: depth + 1 });
++    }
++  }
++};
++
++module.exports = { checkDepth, validateDepth };
+diff --git a/lib/expand.js b/lib/expand.js
+index 35b2c41..acac246 100644
+--- a/lib/expand.js
++++ b/lib/expand.js
+@@ -1,5 +1,7 @@
+ 'use strict';
+ 
++const { validateDepth } = require('./depth');
++
+ const fill = require('fill-range');
+ const stringify = require('./stringify');
+ const utils = require('./utils');
+@@ -31,6 +33,7 @@ const append = (queue = '', stash = '', enclose = false) => {
+ };
+ 
+ const expand = (ast, options = {}) => {
++  validateDepth(ast, true);
+   const rangeLimit = options.rangeLimit === undefined ? 1000 : options.rangeLimit;
+ 
+   const walk = (node, parent = {}) => {
+diff --git a/lib/parse.js b/lib/parse.js
+index 3a6988e..f1be1eb 100644
+--- a/lib/parse.js
++++ b/lib/parse.js
+@@ -1,6 +1,7 @@
+ 'use strict';
+ 
+ const stringify = require('./stringify');
++const { checkDepth } = require('./depth');
+ 
+ /**
+  * Constants
+@@ -143,6 +144,7 @@ const parse = (input, options = {}) => {
+      */
+ 
+     if (value === CHAR_LEFT_PARENTHESES) {
++      checkDepth(stack.length);
+       block = push({ type: 'paren', nodes: [] });
+       stack.push(block);
+       push({ type: 'text', value });
+@@ -195,6 +197,7 @@ const parse = (input, options = {}) => {
+      */
+ 
+     if (value === CHAR_LEFT_CURLY_BRACE) {
++      checkDepth(stack.length);
+       depth++;
+ 
+       const dollar = prev.value && prev.value.slice(-1) === '$' || block.dollar === true;
+diff --git a/lib/stringify.js b/lib/stringify.js
+index 8bcf872..d9c2d7a 100644
+--- a/lib/stringify.js
++++ b/lib/stringify.js
+@@ -1,8 +1,11 @@
+ 'use strict';
+ 
++const { validateDepth } = require('./depth');
++
+ const utils = require('./utils');
+ 
+ module.exports = (ast, options = {}) => {
++  validateDepth(ast);
+   const stringify = (node, parent = {}) => {
+     const invalidBlock = options.escapeInvalid && utils.isInvalidBrace(parent);
+     const invalidNode = node.invalid === true && options.escapeInvalid === true;

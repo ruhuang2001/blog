@@ -14,8 +14,29 @@ Failure modes to check before changing production code:
 - Pagination loses or duplicates published posts; RSS changes database order.
 - A missing article body breaks its page or the entire RSS feed.
 - Lazy code blocks lose highlighting or Mermaid diagrams after a theme change.
+- Cold article loads hydrate a following sibling against server-only lazy equation
+  markup; use a fresh browser context to cover this module-loading race.
 - Nested collection rows disappear or cause hydration errors.
 - Italic text loses its font; toggle children or heading navigation stop working.
+
+Security failure modes to check before changing implementation:
+
+- Restricting remote image hosts accidentally prevents local public images from
+  being optimized, or a forbidden remote URL reaches an upstream server.
+- Mermaid HTML labels or JavaScript links execute script, inject executable DOM,
+  or navigate the browser when their diagram nodes are clicked.
+- Malformed Mermaid syntax creates an unhandled rejection, leaves a misleading
+  SVG, or hides the original source instead of showing an accessible fallback.
+- A failed or malicious diagram breaks other diagrams or theme changes.
+- Article metadata containing a closing script tag escapes its JSON-LD element,
+  executes JavaScript, or loses the original description during safe serialization.
+
+The security examples live only on `/fixture-post-8`. Local optimizer checks use
+`/favicon.png` and `/talks/from-chat-to-agent.png`; the forbidden remote target
+uses this same local fixture server, so the security checks need no external host.
+The browser report records status and content type for image checks and verifies
+script sentinels, rendered DOM, fallback source, and light/dark theme changes.
+`e2e-security.png` records the final fallback and rendered diagrams.
 
 Generate the isolated fixture with `node tests/e2e/create-fixture.cjs`.
 Run the application with `NOTION_PAGE_ID=11111111111111111111111111111111`
@@ -56,3 +77,26 @@ This production-server check uses Node's standard library, isolated fixture copi
 port 3102, and shortened revalidation in the generated build manifest only. It leaves
 repeatable JSON results and build/server logs in `output/playwright/failures/`.
 Run separately from other Next build/server checks because it uses `.next`.
+
+## Braces stack-exhaustion regression
+
+Before writing the local dependency patch, cover these isolated failure modes:
+
+- Deep balanced braces, parentheses, or mixed nesting below the upstream character
+  limit reach recursive compile, expand, or stringify walkers and overflow the stack.
+- Deep unclosed input reaches parser cleanup before a nesting guard can reject it.
+- Direct AST inputs bypass parser protection, including cyclic child structures.
+- Direct imports of the dependency's recursive walkers bypass public entry guards.
+- User options disable the guard or raise it beyond the safe fixed nesting bound.
+- A guard mistakes escaped, quoted, or square-bracket literals for nested blocks.
+- Ordinary compile, expand, stringify, ranges, and malformed shallow input change
+  behavior; rejected input prevents a subsequent ordinary operation from succeeding.
+- Verification accidentally exercises an unpatched package copy or records success
+  after a child process crashes, hangs, or exits without a valid result.
+
+Run `node tests/e2e/braces-security.cjs` after installing the patched dependency.
+It runs the actual installed package in bounded subprocesses and writes the
+repeatable report `output/playwright/security/braces.json`, including package
+paths, patch fingerprint, successful compatibility cases, and rejected attacks.
+The local patch mitigates GHSA-vfj7-8cjw-p6xm; upstream version 3.0.3 remains
+affected in advisory databases, so an audit can still report that version.
